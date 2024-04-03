@@ -11,8 +11,8 @@ export class BlogService {
     ){}
 
 
-    async findAllBlogs():Promise<Blog[]>{
-        const blogs=await this.blogModel.find()
+    async findAllBlogs(title:string):Promise<Blog[]>{
+        const blogs= await this.blogModel.find({ head: { $regex: title, $options: 'i' } });
         return blogs
     }
 
