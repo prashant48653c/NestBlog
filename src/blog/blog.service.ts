@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ParseIntPipe } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, ParseIntPipe } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog } from './schema/blog.schema';
 import * as mongoose from 'mongoose';
@@ -37,6 +37,10 @@ export class BlogService {
     }
 
     async findSingleBlog(id:string):Promise<Blog>{
+        const IsValid=mongoose.isValidObjectId(id)
+        if(!IsValid){
+            throw new BadRequestException('Please enter correct Id')
+        }
         const singleBlog=await this.blogModel.findById(id)
         if(!singleBlog){
             throw new NotFoundException('Blog not found')
