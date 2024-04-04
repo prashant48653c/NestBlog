@@ -3,15 +3,15 @@ import { BlogService } from './blog.service';
 import { Blog } from './schema/blog.schema';
 import { createBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
- 
+ import {Query as ExpressQuery} from 'express-serve-static-core'
 
 @Controller('blogs')
 export class BlogController {
     constructor(private blogService: BlogService) { }
 
     @Get()
-    async getAllBlogs(@Query('title') title?:string ): Promise<Blog[]> {
-        return this.blogService.findAllBlogs(title)
+    async getAllBlogs(@Query() query?:ExpressQuery ): Promise<Blog[]> {
+        return this.blogService.findAllBlogs(query)
 
     }
 

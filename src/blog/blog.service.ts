@@ -1,7 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ParseIntPipe } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog } from './schema/blog.schema';
 import * as mongoose from 'mongoose';
+import {Query as ExpressQuery} from 'express-serve-static-core'
+
 
 @Injectable()
 export class BlogService {
@@ -11,9 +13,22 @@ export class BlogService {
     ){}
 
 
-    async findAllBlogs(title:string):Promise<Blog[]>{
-        const blogs= await this.blogModel.find({ head: { $regex: title, $options: 'i' } });
-        return blogs
+    async findAllBlogs(query:ExpressQuery):Promise<Blog[]>{
+
+        const responsePerPage=3;
+        const currentPage:number= Number(query.page) || 1;
+        const skip:number=responsePerPage * (currentPage -1)
+        const keywords =query.keyword ? {
+            head:{
+                $regex:query.keyword as string,
+                $options:'i'
+            }
+        } : {}
+
+        const blog=await this.blogModel.find( {...keywords} ).limit(responsePerPage).skip(skip)
+       return blog
+        
+        
     }
 
     async createNewBlog(blog:Blog):Promise<Blog>{
