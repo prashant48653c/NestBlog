@@ -3,9 +3,10 @@ import { BlogController } from './blog.controller';
 import { BlogService } from './blog.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BLOGSCHEMA } from './schema/blog.schema';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports:[MongooseModule.forFeature([{name:'Blog',schema:BLOGSCHEMA}])],
+  imports:[ AuthModule,MongooseModule.forFeature([{name:'Blog',schema:BLOGSCHEMA}])],
   controllers: [BlogController],
   providers: [BlogService]
 })

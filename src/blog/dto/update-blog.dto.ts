@@ -1,4 +1,5 @@
-import { IsArray, IsOptional, IsString } from "class-validator";
+import { IsArray, IsEmpty, IsOptional, IsString } from "class-validator";
+import { User } from "src/auth/schema/user.schema";
 
 export class UpdateBlogDto {
 
@@ -11,10 +12,14 @@ export class UpdateBlogDto {
 
     readonly blogImg: string;
 
-    readonly authorName: string;
+
 @IsArray()
 @IsOptional()
 @IsString({each:true})
     readonly tags: string[]
+
+@IsEmpty({message:"You can't pass user id"})
+    readonly user: User;
+
 
 }

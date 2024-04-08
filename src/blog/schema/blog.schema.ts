@@ -1,11 +1,13 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { Document, Mongoose } from "mongoose";
+import { User } from "src/auth/schema/user.schema";
 
 
 
 @Schema({
     timestamps:true
 })
-export class Blog{
+export class Blog {
     @Prop()
     head:string;
 
@@ -15,8 +17,8 @@ export class Blog{
     profilePic:string;
     @Prop()
     blogImg:string;
-    @Prop()
-    authorName:string;
+    @Prop({type:mongoose.Schema.Types.ObjectId,ref:'User'})
+    user:User;
     @Prop()
     tags:string[]
 }

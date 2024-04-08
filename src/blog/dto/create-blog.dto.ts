@@ -1,6 +1,8 @@
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsNotEmpty, IsString, isString, ValidateNested } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsEmpty, IsNotEmpty, IsString, isString, ValidateNested } from "class-validator";
+import { Document } from "mongoose";
+import { User } from "src/auth/schema/user.schema";
 
-export class createBlogDto {
+export class createBlogDto  {
 
     @IsNotEmpty()
     @IsString()
@@ -16,8 +18,13 @@ export class createBlogDto {
     @IsArray()
     @ArrayMinSize(1)
     @ArrayMaxSize(2)
-    @ValidateNested({ each: true })
+    
     @IsString({ each: true })
     readonly tags: string[]
+
+
+    @IsEmpty({message:"You can't pass user id"})
+    readonly user: User;
+
 
 }

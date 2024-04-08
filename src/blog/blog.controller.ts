@@ -1,34 +1,50 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { Blog } from './schema/blog.schema';
 import { createBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
- import {Query as ExpressQuery} from 'express-serve-static-core'
+import { Query as ExpressQuery } from 'express-serve-static-core'
+import { AuthGuard } from '@nestjs/passport';
+
+
+
+
+
+
+
 
 @Controller('blogs')
+
 export class BlogController {
     constructor(private blogService: BlogService) { }
 
     @Get()
-    async getAllBlogs(@Query() query?:ExpressQuery ): Promise<Blog[]> {
+    @UseGuards(AuthGuard()) 
+
+    async getAllBlogs(@Query() query?: ExpressQuery): Promise<Blog[]> {
         return this.blogService.findAllBlogs(query)
 
     }
 
+
     @Post('create')
-    async createBlog( @Body()  blog: createBlogDto): Promise<Blog> {
-        return this.blogService.createNewBlog(blog)
+    @UseGuards(AuthGuard())  //checking if user is logined 
+    async createBlog(@Body() blog: createBlogDto, @Req() req): Promise<Blog> {
+        // console.log(req.user,"Request")
+        return this.blogService.createNewBlog(blog,req.user)
 
     }
 
     @Get(':id')
-    async findSingleBlog  (  @Param('id')   id: string  ): Promise<Blog> {
+    // @UseGuards(AuthGuard()) 
+    async findSingleBlog(@Param('id') id: string): Promise<Blog> {
         return this.blogService.findSingleBlog(id)
     }
 
 
 
     @Put(':id')
+    // @UseGuards(AuthGuard()) 
     async update
         (
             @Param('id')
@@ -40,6 +56,7 @@ export class BlogController {
     }
 
     @Delete(':id')
+    // @UseGuards(AuthGuard()) 
     async deleteTheBlog
         (
 
