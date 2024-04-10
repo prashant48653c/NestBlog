@@ -6,6 +6,7 @@ import * as bcrypt from 'bcryptjs'
 import { JwtService } from '@nestjs/jwt';
 import { signUpDto } from './dto/signup.dto';
 import { loginDto } from './dto/login.dto';
+import { BCRYPTUTILITY } from './utility/auth.utility';
 @Injectable()
 export class AuthService {
 constructor(
@@ -20,7 +21,7 @@ async signUp(signUpDto:signUpDto):Promise<{token:string}>{
 
 const {username,email,password}=signUpDto
 
-const HashPassword=await bcrypt.hash(password,10)
+const HashPassword= await BCRYPTUTILITY.hashPassword(password);
 const user=await this.Usermodel.create({username,email,password:HashPassword})
 
 
@@ -30,18 +31,18 @@ return {token}
 
 
 
-async login(loginDto:loginDto):Promise<{token:string}>{
+async login(loginDto:loginDto):Promise<any>{
 const {email,password}=loginDto
 const isUser=await this.Usermodel.findOne({email:email})
 if(!isUser){
 throw new UnauthorizedException('Invalid email ')
 }
-const isRightPassword= await bcrypt.compare(password,isUser.password)
+const isRightPassword= await BCRYPTUTILITY.comparePasswords(password,isUser.password)
 
 if(!isRightPassword){
 throw new UnauthorizedException('Wrong Password')
 }
-const token= this.JwtService.sign({_id:isUser._id})
-return {token}
+ const {password:string,...result}=isUser
+ return result
 }
 }
