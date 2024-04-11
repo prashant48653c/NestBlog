@@ -4,14 +4,17 @@ import { Blog } from './schema/blog.schema';
 import * as mongoose from 'mongoose';
 import { Query as ExpressQuery } from 'express-serve-static-core'
 import { User } from 'src/auth/schema/user.schema';
-
+import PaginateModel from "mongoose"
+import { paginate } from 'mongoose-paginate-v2';
 
 @Injectable()
 export class BlogService {
     constructor(
         @InjectModel(Blog.name)
+
         private blogModel: mongoose.Model<Blog>
-    ) { }
+    ) { 
+    }
 
 
     async findAllBlogs(query: ExpressQuery): Promise<Blog[]> {
@@ -34,7 +37,13 @@ export class BlogService {
             keywords.tags = { $in: query.tags as string[] };
         }
 
-        const blog = await this.blogModel.find({ ...keywords }).limit(responsePerPage).skip(skip)
+        const options = {
+            limit: responsePerPage,
+            page: currentPage,
+         
+          };
+ 
+ const blog = await this.blogModel.paginate(keywords,options)
         return blog
 
 
