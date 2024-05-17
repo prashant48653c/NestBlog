@@ -1,25 +1,33 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ResolveTimestamps, Document, Model } from 'mongoose';
 
+@Schema({ timestamps: true })
+export class User {
+  @Prop({ type: String, trim: true })
+  userName: string;
 
-@Schema({
-    timestamps:true
-})
+  @Prop({
+    type: String,
+    required: true,
+    unique: true,
+    index: true,
+    trim: true,
+    lowercase: true,
+  })
+  email: string;
 
-export class User extends Document {
+  @Prop({ type: String, trim: true })
+  desc: string;
 
+  @Prop({ type: String, required: [true, 'Password is required'] })
+  password: string;
 
-    @Prop()
-    username:string;
-    @Prop({})
-
-    password:string;
-    @Prop()
-
-    desc:string;
-    @Prop({unique:[true, 'Email already exist']})
-
-    email:string;
+  _id:string;
 }
 
-export const USERSCHEMA= SchemaFactory.createForClass(User)
+export const USERSCHEMA = SchemaFactory.createForClass(User).index({
+  isEmailVerified: 1,
+});
+export type UsersDocument = User &
+  ResolveTimestamps<Document, { timestamps: true }>;
+export type UsersModel = Model<UsersDocument>;

@@ -5,10 +5,7 @@ import { createBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core'
 import { AuthGuard } from '@nestjs/passport';
-
-
-
-
+import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 
 
 
@@ -19,7 +16,7 @@ export class BlogController {
     constructor(private blogService: BlogService) { }
 
     @Get()
-    @UseGuards(AuthGuard()) 
+    @UseGuards(LocalAuthGuard) 
 
     async getAllBlogs(@Query() query?: ExpressQuery): Promise<Blog[]> {
         return this.blogService.findAllBlogs(query)
@@ -28,7 +25,7 @@ export class BlogController {
 
 
     @Post('create')
-    @UseGuards(AuthGuard())  //checking if user is logined 
+    @UseGuards(LocalAuthGuard)  //checking if user is logined 
     async createBlog(@Body() blog: createBlogDto, @Req() req): Promise<Blog> {
         // console.log(req.user,"Request")
         return this.blogService.createNewBlog(blog,req.user)

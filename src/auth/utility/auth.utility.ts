@@ -1,9 +1,12 @@
+import { NotFoundException } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
-export class BCRYPTUTILITY {
+export class AUTH_UTILITY {
   static async hashPassword(password: string): Promise<string> {
     const saltRounds = 10; // Adjust the salt rounds as needed
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+    console.log(hashedPassword)
     return hashedPassword;
   }
 
@@ -13,4 +16,13 @@ export class BCRYPTUTILITY {
   ): Promise<boolean> {
     return await bcrypt.compare(password, hashedPassword);
   }
+
+
+  
+
+  static async APIERROR() {
+     throw new NotFoundException("Item not found");
+     
+   }
+
 }
