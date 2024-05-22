@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { signUpDto } from './dto/signup.dto';
 import { loginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './local-auth.guard';
-import { Request, Response } from 'express';
+import {  Response } from 'express';
+ 
+import { User } from './schema/user.schema';
 
 @Controller('auth')  
 export class AuthController {
@@ -12,21 +14,18 @@ export class AuthController {
 
     @Post('signup')
    async signUp(@Body() signUpDto:signUpDto):Promise<{token:string}>{
-        console.log("Signup dto ")
+       
         return await this.authService.signUp(signUpDto)
     }
-
     @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async loginUser(
-    @Res({ passthrough: true }) res: Response,
-    @Req() req: Request,
-  ) {
-    if (req.user) {
-        const user=req.user
-    const data = await this.authService.login(user);
-    return data;
-        }}
+    @Post('login')
+    async loginUser(
+     
+      @Req() req,
+    ) {
+      const data = await this.authService.login(req.user);
+      return data;
+    }
   
  
 

@@ -25,7 +25,7 @@ export class BlogController {
 
 
     @Post('create')
-    @UseGuards(LocalAuthGuard)  //checking if user is logined 
+    @UseGuards(LocalAuthGuard)  
     async createBlog(@Body() blog: createBlogDto, @Req() req): Promise<Blog> {
         // console.log(req.user,"Request")
         return this.blogService.createNewBlog(blog,req.user)
@@ -41,7 +41,7 @@ export class BlogController {
 
 
     @Put(':id')
-    // @UseGuards(AuthGuard()) 
+    @UseGuards(AuthGuard()) 
     async update
         (
             @Param('id')

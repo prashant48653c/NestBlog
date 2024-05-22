@@ -3,16 +3,15 @@ Content-Type: application/json
 
 {
     "username": "Prakriti",
-    "email": "prakriti1@gmail.com",
+    "email": "prakriti2@gmail.com",
     "password": "aaaaaa"
 }
 
 ###
-GET http://localhost:3000/auth/login
+POST http://localhost:3000/auth/login
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjQ0MWJmMzk5ZGQ1NDRmMmRjYzQyMjQiLCJpYXQiOjE3MTU3Mzk2MzUsImV4cCI6MTcxNTc0MDIzNX0.mjW7PzrNJ8jwofvg_xr7AAPx7YYsM8FI4rVajfLOhSE
-{
-     
-    "email": "prakriti1@gmail.com",
+
+{  
+    "email": "prakriti2@gmail.com",
     "password": "aaaaaa"
 }

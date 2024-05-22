@@ -5,6 +5,8 @@ export class UpdateBlogDto {
 
     @IsOptional()
     @IsString()
+    readonly _id:string;
+
     readonly head:string;
     readonly desc: string;
 

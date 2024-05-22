@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose, { Document, Mongoose } from "mongoose";
-import { User } from "src/auth/schema/user.schema";
+import { User } from "../../auth/schema/user.schema";
+ 
 
 
 
@@ -21,6 +22,7 @@ export class Blog {
     user:User;
     @Prop()
     tags:string[]
+    _id:string
 }
 
 export const BLOGSCHEMA = SchemaFactory.createForClass(Blog)

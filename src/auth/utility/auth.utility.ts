@@ -4,7 +4,7 @@ import * as bcrypt from 'bcryptjs';
 
 export class AUTH_UTILITY {
   static async hashPassword(password: string): Promise<string> {
-    const saltRounds = 10; // Adjust the salt rounds as needed
+    const saltRounds = process.env.PASSWORD_SALT;  
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     console.log(hashedPassword)
     return hashedPassword;

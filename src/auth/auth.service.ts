@@ -1,6 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schema/user.schema';
+import { User, UsersModel } from './schema/user.schema';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs'
 import { JwtService } from '@nestjs/jwt';
@@ -26,7 +26,11 @@ private JwtService:JwtService   //passing jwtservice
 async signUp(signUpDto:signUpDto):Promise<{token:string,refreshToken:string}>{
 
 const {username,email,password}=signUpDto
-
+const isNewUser=await this.Usermodel.findOne({email})
+if(isNewUser){
+  throw new HttpException('Credential error',HttpStatus.BAD_REQUEST,{cause:'Email already exist'});
+ 
+}
 const HashPassword= await AUTH_UTILITY.hashPassword(password);
 const user=await this.Usermodel.create({username,email,password:HashPassword})
 const token= this.JwtService.sign({_id:user._id},{expiresIn:'10m'})
@@ -51,20 +55,21 @@ async login(user: User): Promise<any> {
 
 
 
-async validateUser(loginData:validateType){
+async validateUser(loginData:validateType):Promise<any>{
 const {email,password}=loginData
- 
+ console.log(email,'from validateuser')
 const isUser=await this.Usermodel.findOne({email:email.toLowerCase()})
 if(!isUser){
-    
 throw new UnauthorizedException('Invalid email ')
+ 
+
 }
 const isRightPassword= await AUTH_UTILITY.comparePasswords(password,isUser.password)
 
 if(!isRightPassword){
-throw new UnauthorizedException('Wrong Password')
+  return null
 }
- 
+ console.log(isUser)
  return isUser
 }
 

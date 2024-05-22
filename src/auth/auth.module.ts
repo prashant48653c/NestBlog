@@ -8,6 +8,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { LocalStrategy } from './local-auth.guard';  
 import { User, USERSCHEMA } from './schema/user.schema';  
 import { MongooseModule } from '@nestjs/mongoose';
+import { AccessTokenStrategy } from './strageties/access-token.stragety';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     MongooseModule.forFeature([{ name: User.name, schema: USERSCHEMA }]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy,AccessTokenStrategy],
   exports: [PassportModule],
 })
 export class AuthModule {}

@@ -1,8 +1,11 @@
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsEmpty, IsNotEmpty, IsString, isString, ValidateNested } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsEmpty, IsNotEmpty, IsOptional, IsString, isString, ValidateNested } from "class-validator";
 import { Document } from "mongoose";
 import { User } from "src/auth/schema/user.schema";
 
 export class createBlogDto  {
+
+    @IsOptional()
+    readonly _id:string;
 
     @IsNotEmpty()
     @IsString()

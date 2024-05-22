@@ -27,7 +27,7 @@ keywords.head= {
 $regex: query.keyword as string,
 $options: 'i'
 }
-//mongoose pagination v2
+ 
 
 }
 if (query.tags) {
@@ -42,8 +42,10 @@ return blog
 
 async createNewBlog(blog: Blog, user: User): Promise<Blog> {
     try {
+      
         const TrackedBlog = Object.assign(blog, { user: user._id })
         const res = await this.blogModel.create(TrackedBlog)
+        
         return res 
     } catch (error) {
       throw new HttpException("Error while creating blog", HttpStatus.INTERNAL_SERVER_ERROR)  
@@ -65,10 +67,14 @@ return singleBlog
 
 
 async updateBlog(id: string, newBlog: Blog): Promise<Blog> {
-return await this.blogModel.findByIdAndUpdate(id, newBlog, {
+const blog=await this.blogModel.findByIdAndUpdate(id, newBlog, {
 new: true,
 runValidators: true
 })
+if(!blog){
+  throw new NotFoundException({messege:'Blog doesn`t exist'})
+}
+return blog
 
 
 
@@ -77,7 +83,13 @@ runValidators: true
 
 
 async deleteBlog(id: string): Promise<Blog> {
-return await this.blogModel.findByIdAndDelete(id)
+
+
+const blog= await this.blogModel.findByIdAndDelete(id)
+if(!blog){
+  throw new NotFoundException({messege:'Blog doesn`t exist'})
+}
+return blog
 
 
 
