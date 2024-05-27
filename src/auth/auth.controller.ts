@@ -7,6 +7,7 @@ import { LocalAuthGuard } from './local-auth.guard';
 import {  Response } from 'express';
  
 import { User } from './schema/user.schema';
+import { AccessTokenGuard } from 'src/guards/access-token.guard';
 
 @Controller('auth')  
 export class AuthController {
@@ -17,6 +18,9 @@ export class AuthController {
        
         return await this.authService.signUp(signUpDto)
     }
+
+
+    
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async loginUser(
@@ -28,11 +32,20 @@ export class AuthController {
     }
   
  
+    @UseGuards(AccessTokenGuard)
 
-    @Get('refreshaccesstoken')
-   async reFreshTokens(@Body() {ACCESSTOKEN,REFRESHTOKEN}):Promise<{token:string}>{
+    @Post('refreshaccesstoken')
+   async refreshTokens(@Body() {ACCESSTOKEN,REFRESHTOKEN}):Promise<{token:string}>{
+    console.log("Route hitted")
         return await this.authService.refreshTokens({ACCESSTOKEN,REFRESHTOKEN})
     }
+
+
+    @Get('logout')
+    async logOut():Promise<{token:string}>{
+        
+         return await this.authService.logOut()
+     }
     
 
 }

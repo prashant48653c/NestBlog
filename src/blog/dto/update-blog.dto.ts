@@ -8,9 +8,13 @@ export class UpdateBlogDto {
     readonly _id:string;
 
     readonly head:string;
+@IsOptional()
+
     readonly desc: string;
+    @IsOptional()
 
     readonly profilePic: string;
+    @IsOptional()
 
     readonly blogImg: string;
 
@@ -20,8 +24,11 @@ export class UpdateBlogDto {
 @IsString({each:true})
     readonly tags: string[]
 
+@IsOptional()
 @IsEmpty({message:"You can't pass user id"})
     readonly user: User;
+    @IsOptional()
+    readonly refreshToken: string;
 
 
 }

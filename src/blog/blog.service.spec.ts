@@ -21,20 +21,21 @@ import { User } from "src/auth/schema/user.schema";
       blogImg: "url_to_blog_image.jpg",
       user: {
         _id: '12345',
-        userName: 'testuser',
+        username: 'testuser',
         email: 'test@example.com',
         desc: 'Test user description',
         password: 'password',
+        
       },
       tags: ['tag1', 'tag2'],
     };
   
     const mockUser: User = {
-      _id: '12345',
-      userName: 'testuser',
-      email: 'test@example.com',
-      desc: 'Test user description',
-      password: 'password',
+      _id: '123344345',
+      username: 'testusers',
+      email: 'test@examples.com',
+      desc: 'Test user desscription',
+      password: 'passwords',
     };
   
     const mockBlogModel = {

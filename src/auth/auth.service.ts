@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { signUpDto } from './dto/signup.dto';
 import { loginDto } from './dto/login.dto';
 import { AUTH_UTILITY } from './utility/auth.utility';
-import { validateType } from './types/helper';
+import { tokensType, validateType } from './types/helper';
 
 
 @Injectable()
@@ -26,21 +26,27 @@ private JwtService:JwtService   //passing jwtservice
 async signUp(signUpDto:signUpDto):Promise<{token:string,refreshToken:string}>{
 
 const {username,email,password}=signUpDto
-const isNewUser=await this.Usermodel.findOne({email})
-if(isNewUser){
+const isOldUser=await this.Usermodel.findOne({email})
+if(isOldUser){
   throw new HttpException('Credential error',HttpStatus.BAD_REQUEST,{cause:'Email already exist'});
  
 }
-const HashPassword= await AUTH_UTILITY.hashPassword(password);
-const user=await this.Usermodel.create({username,email,password:HashPassword})
-const token= this.JwtService.sign({_id:user._id},{expiresIn:'10m'})
-const refreshToken=this.JwtService.sign({_id:user._id})
 
-await this.Usermodel.updateOne(
-    { _id: user._id },
-    { $set: { refreshToken } }
-  );
-  
+const HashPassword= await AUTH_UTILITY.hashPassword(password);
+
+const user=await this.Usermodel.create({username,email,password:HashPassword})
+const token= await this.JwtService.sign({_id: user._id},{expiresIn: '2d'});
+const refreshToken=await this.JwtService.sign({_id:user._id},{expiresIn:'7d'})
+
+
+const updatedUser = await this.Usermodel.findOneAndUpdate(
+  { _id: user._id },
+  { $set: { refreshToken } },
+  { new: true }  
+);
+console.log(updatedUser);
+
+ 
 
 
 
@@ -52,7 +58,7 @@ return {token,refreshToken}
 async login(user: User): Promise<any> {
   return user;
 }
-
+  
 
 
 async validateUser(loginData:validateType):Promise<any>{
@@ -73,8 +79,11 @@ if(!isRightPassword){
  return isUser
 }
 
-async refreshTokens({ACCESSTOKEN,REFRESHTOKEN}):Promise<any>{
-    
+async refreshTokens({ACCESSTOKEN,REFRESHTOKEN}:tokensType):Promise<any>{
+  const refreshStatus=  AUTH_UTILITY.isTokenExpired(REFRESHTOKEN)
+  const accessStatus=  AUTH_UTILITY.isTokenExpired(ACCESSTOKEN)
+ 
+
     const User=await this.Usermodel.findOne({refreshToken:REFRESHTOKEN})
      if(!User){
       throw new UnauthorizedException('Invalid refresh token')
@@ -84,5 +93,9 @@ async refreshTokens({ACCESSTOKEN,REFRESHTOKEN}):Promise<any>{
      return {newAccessToken}
     }
     
+
+    async logOut(): Promise<any> {
+      return 
+    }
 
 }

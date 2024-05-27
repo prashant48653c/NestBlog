@@ -10,9 +10,13 @@ export class createBlogDto  {
     @IsNotEmpty()
     @IsString()
     readonly head:string;
+    @IsNotEmpty()
+    @IsString()
     readonly desc: string;
+    @IsOptional()
 
     readonly profilePic: string;
+    @IsOptional()
 
     readonly blogImg: string;
 
@@ -21,6 +25,7 @@ export class createBlogDto  {
     @IsArray()
     @ArrayMinSize(1)
     @ArrayMaxSize(2)
+    @IsOptional()
     
     @IsString({ each: true })
     readonly tags: string[]

@@ -34,7 +34,12 @@ if (query.tags) {
 keywords.tags = { $in: query.tags as string[] };
 }
 
+if (query.user) {
+  keywords.user = { $in: query.user as string[] };
+  }
+
 const blog = await this.blogModel.find({ ...keywords }).limit(responsePerPage).skip(skip)
+console.log(blog)
 return blog
 
 
@@ -48,6 +53,7 @@ async createNewBlog(blog: Blog, user: User): Promise<Blog> {
         
         return res 
     } catch (error) {
+      console.log(error)
       throw new HttpException("Error while creating blog", HttpStatus.INTERNAL_SERVER_ERROR)  
     }
 

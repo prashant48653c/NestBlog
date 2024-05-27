@@ -1,17 +1,72 @@
-POST http://localhost:3000/auth/signup
+POST http://localhost:4000/auth/signup
 Content-Type: application/json
 
 {
-    "username": "Prakriti",
-    "email": "prakriti2@gmail.com",
+    "email": "samyam9@gmail.com",
+    "username": "Saam",
     "password": "aaaaaa"
 }
 
 ###
-POST http://localhost:3000/auth/login
+POST http://localhost:4000/auth/login
 Content-Type: application/json
 
 {  
     "email": "prakriti2@gmail.com",
     "password": "aaaaaa"
+}
+
+###
+POST http://localhost:4000/auth/refreshaccesstoken
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjRlY2M1ODM0OTdmYmI1ZTAzYWE1NzMiLCJpYXQiOjE3MTY0NDAxNTIsImV4cCI6MTcxNjQ0Mzc1Mn0.sTWq3va_G-2DeBRBx3WWcbZqhYqskHE2WSFY3UltJ0o
+
+{  
+    "REFRESHTOKEN": "prakriti2@gmail.com",
+    "ACCESSTOKEN": "aaaaaa"
+}
+
+ 
+
+###
+GET http://localhost:4000/blogs
+
+###
+GET http://localhost:4000/blogs/660d47933aeebfc7846b182e
+ 
+###
+POST http://localhost:4000/blogs/create
+Content-Type: application/json
+
+ {
+ 
+  "head": "Understanding NestJS",
+  "desc": "A comprehensive guide to building applications with NestJS.",
+  "profilePic": "http://example.com/profile-pic.jpg",
+  "blogImg": "http://example.com/blog-img.jpg",
+  "authorName": "John Doe",
+  "tags": ["nestjs", "typescript"]
+  
+}
+
+
+###
+PUT  http://localhost:4000/blogs/:id
+Content-Type: application/json
+
+{
+  "_id": "60d0fe4f5411246168a109ca", 
+  "head": "Advanced NestJS Techniques",
+  "desc": "Exploring advanced patterns and practices in NestJS development.",
+ 
+  
+}
+
+
+###
+DELETE http://localhost:4000/blogs/:id
+Content-Type: application/json
+
+{  
+    "_id": "60d0fe4f5411246168a109ca", 
 }

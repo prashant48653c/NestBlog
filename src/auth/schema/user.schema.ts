@@ -3,8 +3,9 @@ import { ResolveTimestamps, Document, Model } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ type: String, trim: true })
-  userName: string;
+   
+    @Prop({ type: String, trim: true, required: true, })
+  username: string;
 
   @Prop({
     type: String,
@@ -16,13 +17,16 @@ export class User {
   })
   email: string;
 
-  @Prop({ type: String, trim: true })
+  @Prop({ type: String, trim: true,  })
   desc: string;
 
   @Prop({ type: String, required: [true, 'Password is required'] })
   password: string;
 
+ 
   _id:string;
+  @Prop({ type: String })
+  refreshToken:string;
 }
 
 export const USERSCHEMA = SchemaFactory.createForClass(User).index({

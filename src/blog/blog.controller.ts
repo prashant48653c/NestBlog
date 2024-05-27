@@ -16,18 +16,19 @@ export class BlogController {
     constructor(private blogService: BlogService) { }
 
     @Get()
-    @UseGuards(LocalAuthGuard) 
+  
 
     async getAllBlogs(@Query() query?: ExpressQuery): Promise<Blog[]> {
+        console.log("route hitted")
         return this.blogService.findAllBlogs(query)
 
     }
 
-
+    @UseGuards(AuthGuard())
     @Post('create')
-    @UseGuards(LocalAuthGuard)  
+     
     async createBlog(@Body() blog: createBlogDto, @Req() req): Promise<Blog> {
-        // console.log(req.user,"Request")
+        console.log(req.user,"Request")
         return this.blogService.createNewBlog(blog,req.user)
 
     }
@@ -41,7 +42,7 @@ export class BlogController {
 
 
     @Put(':id')
-    @UseGuards(AuthGuard()) 
+    // @UseGuards(AuthGuard()) 
     async update
         (
             @Param('id')

@@ -1,4 +1,4 @@
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsEmail, IsNotEmpty, IsString, isString, MinLength, ValidateNested } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsEmail, IsNotEmpty, IsOptional, IsString, isString, MinLength, ValidateNested } from "class-validator";
 
 export class signUpDto {
 
@@ -15,6 +15,8 @@ export class signUpDto {
 @IsString()
 
     readonly password: string;
+    @IsOptional()
+    readonly refreshToken: string;
 
   
 

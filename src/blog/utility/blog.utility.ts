@@ -21,7 +21,7 @@ export class BLOG_UTILITY {
     if (query.tags) {
     keywords.tags = { $in: query.tags as string[] };
     }
-    const blog = await this..find({ ...keywords }).limit(responsePerPage).skip(skip)
+    
     
     return {...keywords,responsePerPage,skip}
   }
