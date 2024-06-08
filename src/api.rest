@@ -28,8 +28,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjRlY2M1O
 
  
 
+
 ###
-GET http://localhost:4000/blogs
+GET http://localhost:4000/author/66541017b730397637d922bb
+###
+GET http://localhost:4000/blogs?page=6
 
 ###
 GET http://localhost:4000/blogs/660d47933aeebfc7846b182e
@@ -64,9 +67,12 @@ Content-Type: application/json
 
 
 ###
-DELETE http://localhost:4000/blogs/:id
-Content-Type: application/json
+# DELETE http://localhost:4000/blogs/:id
+# Content-Type: application/json
 
-{  
-    "_id": "60d0fe4f5411246168a109ca", 
-}
+# {  
+#     "_id": "60d0fe4f5411246168a109ca", 
+# }
+ ###
+
+DELETE http://localhost:4000/blogs/delall

@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
@@ -26,16 +26,23 @@ export class AUTH_UTILITY {
    }
 
 
-static isTokenExpired(token:string): boolean {
-  try {
-    const isTokenExpired = token => Date.now() >= (JSON.parse(atob(token.split('.')[1]))).exp * 1000
-    return false
-  } catch (error) {
-    
-    return true;
+   static isTokenExpired(token: string): boolean {
+    try {
+      
+      const decodedToken = jwt.decode(token) as { exp: number };
+
+      if (!decodedToken || !decodedToken.exp) {
+        throw new UnauthorizedException('Token does not contain expiration date');
+      }
+
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decodedToken.exp < currentTime;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }
 
  
 
-}
+

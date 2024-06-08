@@ -1,5 +1,5 @@
 import { IsArray, IsEmpty, IsOptional, IsString } from "class-validator";
-import { User } from "src/auth/schema/user.schema";
+import { User } from "../../auth/schema/user.schema";
 
 export class UpdateBlogDto {
 

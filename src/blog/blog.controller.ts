@@ -19,14 +19,14 @@ export class BlogController {
   
 
     async getAllBlogs(@Query() query?: ExpressQuery): Promise<Blog[]> {
-        console.log("route hitted")
+       
         return this.blogService.findAllBlogs(query)
 
     }
 
-    @UseGuards(AuthGuard())
+   
     @Post('create')
-     
+     @UseGuards(AuthGuard())
     async createBlog(@Body() blog: createBlogDto, @Req() req): Promise<Blog> {
         console.log(req.user,"Request")
         return this.blogService.createNewBlog(blog,req.user)
@@ -64,5 +64,7 @@ export class BlogController {
         ): Promise<Blog> {
         return this.blogService.deleteBlog(id)
     }
+
+ 
 
 }

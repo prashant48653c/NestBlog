@@ -12,7 +12,7 @@ import { AccessTokenStrategy } from './strageties/access-token.stragety';
 
 @Module({
   imports: [
-    PassportModule.register({ defaultStrategy: 'jwt' }), // Assuming you have a default jwt strategy
+    PassportModule.register({ defaultStrategy: 'jwt' }),  
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({

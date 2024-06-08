@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { signUpDto } from './dto/signup.dto';
 import { loginDto } from './dto/login.dto';
@@ -7,7 +7,7 @@ import { LocalAuthGuard } from './local-auth.guard';
 import {  Response } from 'express';
  
 import { User } from './schema/user.schema';
-import { AccessTokenGuard } from 'src/guards/access-token.guard';
+import { AccessTokenGuard } from '../guards/access-token.guard';
 
 @Controller('auth')  
 export class AuthController {
@@ -26,26 +26,39 @@ export class AuthController {
     async loginUser(
      
       @Req() req,
-    ) {
+     
+    ):Promise<any> {
       const data = await this.authService.login(req.user);
-      return data;
+       
+      console.log(data,"this is data ")
+      return data
     }
   
  
-    @UseGuards(AccessTokenGuard)
+    
 
     @Post('refreshaccesstoken')
-   async refreshTokens(@Body() {ACCESSTOKEN,REFRESHTOKEN}):Promise<{token:string}>{
+   async refreshTokens(@Body() {REFRESHTOKEN}):Promise<{token:string}>{
     console.log("Route hitted")
-        return await this.authService.refreshTokens({ACCESSTOKEN,REFRESHTOKEN})
+        return await this.authService.refreshTokens({REFRESHTOKEN})
     }
 
 
-    @Get('logout')
-    async logOut():Promise<{token:string}>{
-        
-         return await this.authService.logOut()
-     }
+    @Delete('logout')
+async logOut(@Body('refreshToken') refreshToken: string, @Res() res: Response): Promise<any> {
+     
+  
+    res.clearCookie('accesstoken', { path: '/' });
+
+    res.clearCookie('refreshtoken', { path: '/' });
+
+     
+    await this.authService.logOut(refreshToken);
+
+     
+    return res.status(200).json({ message: 'Successfully logged out' });
+}
+
     
 
 }

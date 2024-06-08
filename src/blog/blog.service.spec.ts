@@ -25,6 +25,7 @@ import { User } from "src/auth/schema/user.schema";
         email: 'test@example.com',
         desc: 'Test user description',
         password: 'password',
+        refreshToken:'dse3f3'
         
       },
       tags: ['tag1', 'tag2'],
@@ -36,6 +37,7 @@ import { User } from "src/auth/schema/user.schema";
       email: 'test@examples.com',
       desc: 'Test user desscription',
       password: 'passwords',
+      refreshToken:'sdfds',
     };
   
     const mockBlogModel = {

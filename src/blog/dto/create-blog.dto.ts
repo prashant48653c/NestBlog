@@ -1,6 +1,6 @@
 import { ArrayMaxSize, ArrayMinSize, IsArray, IsEmpty, IsNotEmpty, IsOptional, IsString, isString, ValidateNested } from "class-validator";
 import { Document } from "mongoose";
-import { User } from "src/auth/schema/user.schema";
+import { User } from "../../auth/schema/user.schema";
 
 export class createBlogDto  {
 

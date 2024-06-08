@@ -4,6 +4,6 @@ export type validateType = {
   };
 
   export type tokensType = {
-    ACCESSTOKEN: string;
+     
     REFRESHTOKEN: string;
   };

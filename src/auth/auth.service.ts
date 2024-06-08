@@ -15,87 +15,121 @@ import { tokensType, validateType } from './types/helper';
 
 
 export class AuthService {
-constructor(
-@InjectModel(User.name)
-private Usermodel:Model<User>,   //it's like passing Usermodel
-private JwtService:JwtService   //passing jwtservice
-){}
-
-   
-
-async signUp(signUpDto:signUpDto):Promise<{token:string,refreshToken:string}>{
-
-const {username,email,password}=signUpDto
-const isOldUser=await this.Usermodel.findOne({email})
-if(isOldUser){
-  throw new HttpException('Credential error',HttpStatus.BAD_REQUEST,{cause:'Email already exist'});
- 
-}
-
-const HashPassword= await AUTH_UTILITY.hashPassword(password);
-
-const user=await this.Usermodel.create({username,email,password:HashPassword})
-const token= await this.JwtService.sign({_id: user._id},{expiresIn: '2d'});
-const refreshToken=await this.JwtService.sign({_id:user._id},{expiresIn:'7d'})
-
-
-const updatedUser = await this.Usermodel.findOneAndUpdate(
-  { _id: user._id },
-  { $set: { refreshToken } },
-  { new: true }  
-);
-console.log(updatedUser);
-
- 
+  constructor(
+    @InjectModel(User.name)
+    private Usermodel: Model<User>,   //it's like passing Usermodel
+    private JwtService: JwtService   //passing jwtservice
+  ) { }
 
 
 
-return {token,refreshToken}
-}
+  async signUp(signUpDto: signUpDto): Promise<{ token: string, refreshToken: string }> {
 
+    const { username, email, password } = signUpDto
+    const isOldUser = await this.Usermodel.findOne({ email })
+    if (isOldUser) {
+      throw new HttpException('Credential error', HttpStatus.BAD_REQUEST, { cause: 'Email already exist' });
 
-
-async login(user: User): Promise<any> {
-  return user;
-}
-  
-
-
-async validateUser(loginData:validateType):Promise<any>{
-const {email,password}=loginData
- console.log(email,'from validateuser')
-const isUser=await this.Usermodel.findOne({email:email.toLowerCase()})
-if(!isUser){
-throw new UnauthorizedException('Invalid email ')
- 
-
-}
-const isRightPassword= await AUTH_UTILITY.comparePasswords(password,isUser.password)
-
-if(!isRightPassword){
-  return null
-}
- console.log(isUser)
- return isUser
-}
-
-async refreshTokens({ACCESSTOKEN,REFRESHTOKEN}:tokensType):Promise<any>{
-  const refreshStatus=  AUTH_UTILITY.isTokenExpired(REFRESHTOKEN)
-  const accessStatus=  AUTH_UTILITY.isTokenExpired(ACCESSTOKEN)
- 
-
-    const User=await this.Usermodel.findOne({refreshToken:REFRESHTOKEN})
-     if(!User){
-      throw new UnauthorizedException('Invalid refresh token')
-     }
-     
-     const newAccessToken=this.JwtService.sign({_id:User._id},{expiresIn:'10m'})
-     return {newAccessToken}
     }
+
+    const HashPassword = await AUTH_UTILITY.hashPassword(password);
+
+    const user = await this.Usermodel.create({ username, email, password: HashPassword })
+    const token = await this.JwtService.sign({ _id: user._id }, { expiresIn: '2d' });
+    const refreshToken = await this.JwtService.sign({ _id: user._id }, { expiresIn: '7d' })
+
+
+    const updatedUser = await this.Usermodel.findOneAndUpdate(
+      { _id: user._id },
+      { $set: { refreshToken } },
+      { new: true }
+    );
+    // console.log(updatedUser);
+
+
+
+
+
+    return { token, refreshToken }
+  }
+
+
+
+  async login(user: User): Promise<any> {
+    
+    const token = await this.JwtService.sign({ _id: user._id }, { expiresIn: '2d' });
+    const refreshToken = await this.JwtService.sign({ _id: user._id }, { expiresIn: '7d' })
+
+
+    const updatedUser = await this.Usermodel.findOneAndUpdate(
+      { _id: user._id },
+      { $set: { refreshToken } },
+      { new: true }
+    );
+    // console.log(updatedUser)
+    return {user,token,refreshToken};
+  }
+
+
+
+  async validateUser(loginData: validateType): Promise<any> {
+    const { email, password } = loginData
+    console.log(email, 'from validateuser')
+    const isUser = await this.Usermodel.findOne({ email: email.toLowerCase() })
+    if (!isUser) {
+      throw new UnauthorizedException('Invalid email ')
+
+
+    }
+    const isRightPassword = await AUTH_UTILITY.comparePasswords(password, isUser.password)
+
+    if (!isRightPassword) {
+      return null
+    }
+    console.log(isUser)
+    return isUser
+  }
+
+  async refreshTokens({  REFRESHTOKEN }: tokensType): Promise<any> {
+    // const refreshStatus = AUTH_UTILITY.isTokenExpired(REFRESHTOKEN);
+    // const accessStatus = AUTH_UTILITY.isTokenExpired(ACCESSTOKEN);
+    const User = await this.Usermodel.findOne({ refreshToken: REFRESHTOKEN });
+
+    if (!User) {
+        throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    let newAccessToken = null;
+    let newRefreshToken = null;
+
+    
+        newRefreshToken = this.JwtService.sign({ id: User._id }, { expiresIn: '7d' });
+        await User.updateOne({ refreshToken: newRefreshToken });
     
 
-    async logOut(): Promise<any> {
-      return 
-    }
+  
+        newAccessToken = this.JwtService.sign({ id: User._id }, { expiresIn: '2d' });
+    
+
+    return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+    };
+}
+
+
+
+async logOut(refreshToken: string): Promise<any> {
+  const user = await this.Usermodel.findOne({ refreshToken });
+
+  if (!user) {
+      throw new UnauthorizedException('Invalid refresh token');
+  }
+
+  await this.Usermodel.updateOne({ _id: user._id }, { $unset: { refreshToken: "" } });
+
+  return { message: 'Successfully logged out' };
+}
+
 
 }

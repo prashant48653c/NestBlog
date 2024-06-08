@@ -18,7 +18,7 @@ export class AccessTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: (req: Request) =>
         req.headers.authorization?.split(' ')[1] || req.cookies.accessToken,
-      secretOrKey: process.env.ACCESS_TOKEN_SECRET,
+      secretOrKey: process.env.JWT_SECRET_KEY,
       passReqToCallback: true,
     });
   }

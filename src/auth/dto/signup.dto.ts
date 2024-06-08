@@ -15,8 +15,7 @@ export class signUpDto {
 @IsString()
 
     readonly password: string;
-    @IsOptional()
-    readonly refreshToken: string;
+  
 
   
 
