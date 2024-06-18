@@ -9,10 +9,10 @@ import { User } from "../../auth/schema/user.schema";
     timestamps:true
 })
 export class Blog {
-    @Prop()
+    @Prop({type: String, required: [true, 'Heading is required']})
     head:string;
 
-    @Prop()
+    @Prop({type: String, required: [true, 'Description is required']})
     desc:string;
     @Prop()
     profilePic:string;
@@ -20,7 +20,7 @@ export class Blog {
     blogImg:string;
     @Prop({type:mongoose.Schema.Types.ObjectId,ref:'User'})
     user:User;
-    @Prop()
+    @Prop({ required: [true, 'Tag is required']})
     tags:string[]
     _id:string
 }

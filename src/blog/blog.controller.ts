@@ -4,29 +4,35 @@ import { Blog } from './schema/blog.schema';
 import { createBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core'
-import { AuthGuard } from '@nestjs/passport';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
+ 
+import { AccessTokenGuard } from '../guards/access-token.guard';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 
 
 
 @Controller('blogs')
-
+@ApiTags("Blogs")
+@ApiSecurity("Jwt-Auth")
 export class BlogController {
     constructor(private blogService: BlogService) { }
 
     @Get()
   
+    @UseGuards(AccessTokenGuard)
 
-    async getAllBlogs(@Query() query?: ExpressQuery): Promise<Blog[]> {
+    async getAllBlogs(@Query() query?: ExpressQuery): Promise<{ blogs: Blog[], total: number }> {
        
-        return this.blogService.findAllBlogs(query)
+        const { blogs, total } = await this.blogService.findAllBlogs(query)
+        return {
+          blogs,
+          total
 
     }
-
+    }
    
     @Post('create')
-     @UseGuards(AuthGuard())
+     @UseGuards(AccessTokenGuard)
     async createBlog(@Body() blog: createBlogDto, @Req() req): Promise<Blog> {
         console.log(req.user,"Request")
         return this.blogService.createNewBlog(blog,req.user)
@@ -34,7 +40,8 @@ export class BlogController {
     }
 
     @Get(':id')
-    // @UseGuards(AuthGuard()) 
+    @UseGuards(AccessTokenGuard)
+
     async findSingleBlog(@Param('id') id: string): Promise<Blog> {
         return this.blogService.findSingleBlog(id)
     }
@@ -42,7 +49,8 @@ export class BlogController {
 
 
     @Put(':id')
-    // @UseGuards(AuthGuard()) 
+    @UseGuards(AccessTokenGuard)
+
     async update
         (
             @Param('id')
@@ -54,7 +62,8 @@ export class BlogController {
     }
 
     @Delete(':id')
-    // @UseGuards(AuthGuard()) 
+    @UseGuards(AccessTokenGuard)
+
     async deleteTheBlog
         (
 

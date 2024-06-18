@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UsersModel } from './schema/user.schema';
 import { Model } from 'mongoose';
@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { signUpDto } from './dto/signup.dto';
 import { loginDto } from './dto/login.dto';
 import { AUTH_UTILITY } from './utility/auth.utility';
-import { tokensType, validateType } from './types/helper';
+import { loginType, returnedTokenType, signUpType, tokensType, validateType } from './types/helper';
 
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AuthService {
 
 
 
-  async signUp(signUpDto: signUpDto): Promise<{ token: string, refreshToken: string }> {
+  async signUp(signUpDto: signUpDto): Promise<signUpType> {
 
     const { username, email, password } = signUpDto
     const isOldUser = await this.Usermodel.findOne({ email })
@@ -55,7 +55,7 @@ export class AuthService {
 
 
 
-  async login(user: User): Promise<any> {
+  async login(user: User): Promise<loginType> {
     
     const token = await this.JwtService.sign({ _id: user._id }, { expiresIn: '2d' });
     const refreshToken = await this.JwtService.sign({ _id: user._id }, { expiresIn: '7d' })
@@ -66,7 +66,11 @@ export class AuthService {
       { $set: { refreshToken } },
       { new: true }
     );
-    // console.log(updatedUser)
+
+    if(!updatedUser){
+      throw new NotFoundException({messege:'User not found'})
+    }
+     
     return {user,token,refreshToken};
   }
 
@@ -75,28 +79,29 @@ export class AuthService {
   async validateUser(loginData: validateType): Promise<any> {
     const { email, password } = loginData
     console.log(email, 'from validateuser')
+    
     const isUser = await this.Usermodel.findOne({ email: email.toLowerCase() })
     if (!isUser) {
-      throw new UnauthorizedException('Invalid email ')
-
+      throw new NotFoundException({message:'User not found'})
+      
 
     }
     const isRightPassword = await AUTH_UTILITY.comparePasswords(password, isUser.password)
 
     if (!isRightPassword) {
-      return null
+      throw new BadRequestException({message:"Invalid password"})
     }
     console.log(isUser)
     return isUser
   }
 
-  async refreshTokens({  REFRESHTOKEN }: tokensType): Promise<any> {
+  async refreshTokens({  REFRESHTOKEN }: tokensType): Promise<returnedTokenType> {
     // const refreshStatus = AUTH_UTILITY.isTokenExpired(REFRESHTOKEN);
     // const accessStatus = AUTH_UTILITY.isTokenExpired(ACCESSTOKEN);
     const User = await this.Usermodel.findOne({ refreshToken: REFRESHTOKEN });
 
     if (!User) {
-        throw new UnauthorizedException('Invalid refresh token');
+        throw new UnauthorizedException({messege:'Invalid refresh token'});
     }
 
     let newAccessToken = null;

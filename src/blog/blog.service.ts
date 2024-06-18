@@ -14,35 +14,31 @@ private blogModel: mongoose.Model<Blog>
 ) { }
 
 
-async findAllBlogs(query: ExpressQuery): Promise<Blog[]> {
+async findAllBlogs(query: ExpressQuery): Promise<{ blogs: Blog[], total: number }> {
+  const responsePerPage = 3;
+  const currentPage: number = Number(query.page) || 1;
+  const skip: number = responsePerPage * (currentPage - 1);
+  const keywords: any = {};
 
-const responsePerPage = 3;
-const currentPage: number = Number(query.page) || 1;
-const skip: number = responsePerPage * (currentPage - 1)
-const keywords:any =  {}
-
-if(query.keyword){
-
-keywords.head= {
-$regex: query.keyword as string,
-$options: 'i'
-}
- 
-
-}
-if (query.tags) {
-keywords.tags = { $in: query.tags as string[] };
-}
-
-if (query.user) {
-  keywords.user = { $in: query.user as string[] };
+  if (query.keyword) {
+    keywords.head = {
+      $regex: query.keyword as string,
+      $options: 'i'
+    };
   }
 
-const blog = await this.blogModel.find({ ...keywords }).limit(responsePerPage).skip(skip)
-console.log(blog)
-return blog
+  if (query.tags) {
+    keywords.tags = { $in: query.tags as string[] };
+  }
 
+  if (query.user) {
+    keywords.user = { $in: query.user as string[] };
+  }
 
+  const blogs = await this.blogModel.find({ ...keywords }).limit(responsePerPage).skip(skip);
+  const totalBlogs = await this.blogModel.countDocuments({ ...keywords });
+  const total = Math.ceil(totalBlogs / responsePerPage);
+  return { blogs, total };
 }
 
 async createNewBlog(blog: Blog, user: User): Promise<Blog> {
@@ -73,6 +69,7 @@ return singleBlog
 
 
 async updateBlog(id: string, newBlog: Blog): Promise<Blog> {
+  console.log(newBlog)
 const blog=await this.blogModel.findByIdAndUpdate(id, newBlog, {
 new: true,
 runValidators: true

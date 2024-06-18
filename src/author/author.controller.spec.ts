@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorController } from './author.controller';
 import { AuthorService } from './author.service';
-import { User } from 'src/auth/schema/user.schema';
+import { User } from '../auth/schema/user.schema';
 
 describe('AuthorController', () => {
   let authorController: AuthorController;
@@ -16,6 +16,7 @@ describe('AuthorController', () => {
           useValue: {
             getUserInfo: jest.fn(),
             updateUserInfo: jest.fn(),
+            updatePP:jest.fn()
           },
         },
       ],
@@ -34,7 +35,8 @@ describe('AuthorController', () => {
         desc: 'description',
         refreshToken:'dfd',
         email:'test@gmail.com',
-        password:'aaaaaa'
+        password:'aaaaaa',
+        profilePic:"i.png"
       };
 
       jest.spyOn(authorService, 'getUserInfo').mockResolvedValue(mockUser);
@@ -64,4 +66,45 @@ describe('AuthorController', () => {
       expect(authorService.updateUserInfo).toHaveBeenCalledWith(updateUserDto);
     });
   });
+
+  describe('updatePP',()=>{
+    it('should update the user profile picture',async()=>{
+      let file:Express.Multer.File = {
+        fieldname: 'fileUpload',
+        originalname: 'example.txt',
+        destination: 'uploads/',
+        filename: 'example-12345.txt',
+        mimetype: 'text/plain',
+        path: 'uploads/example-12345.txt',
+        size: 2323,
+        stream: null,  
+        buffer: Buffer.from('Example file content'),
+        encoding:'dfdsf'
+      };
+      
+     
+      let _id='123'
+      let mockUpdatedUser:User = {
+        _id: '123',
+        username: 'updatedUser',
+        desc: 'updatedDescription',
+        profilePic:'i.png',
+        email:'ac@gmail.com',
+        password:'aaaaaa',
+        refreshToken:'sdfsdfd'
+      };
+      jest.spyOn(authorController, 'updatePP').mockResolvedValue(mockUpdatedUser);
+
+      const result = await authorController.updatePP(file,_id);
+      expect(result).toBe(mockUpdatedUser);
+      expect(authorController.updatePP).toHaveBeenCalledWith(file,_id);
+   
+      
+    })
+
+     
+  })
+
+
+
 });

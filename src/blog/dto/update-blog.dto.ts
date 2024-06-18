@@ -4,7 +4,7 @@ import { User } from "../../auth/schema/user.schema";
 export class UpdateBlogDto {
 
     @IsOptional()
-    @IsString()
+    @IsString() 
     readonly _id:string;
 
     readonly head:string;

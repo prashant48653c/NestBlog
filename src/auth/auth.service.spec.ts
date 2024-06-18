@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { User } from './schema/user.schema';
 import { Model } from 'mongoose';
 
@@ -16,7 +16,8 @@ describe('AuthService', () => {
     email: 'test@example.com',
     desc: 'Test user description',
     password: 'password',
-    refreshToken: 'slfjsdfe3d'
+    refreshToken: 'slfjsdfe3d',
+    profilePic:'i.png'
   };
 
   const mockUserModel = {
@@ -106,5 +107,48 @@ describe('AuthService', () => {
       );
       expect(result).toEqual({ user:mockUser, token: 'token', refreshToken: 'refreshToken' });
     });
+    it('should throw NotFoundException if user not found', async () => {
+      const invalidUser = { email: 'invalid@example.com', password: 'password' };
+    
+      mockUserModel.findOne.mockResolvedValueOnce(null);
+    
+      await expect(service.login(invalidUser as User))
+        .rejects
+        .toThrow(new NotFoundException({messege:'User not found'}));
+    });
+    
+   
+  }); 
+
+  describe('logOut', () => {
+    it('should log out the user', async () => {
+      const refreshToken = 'slfjsdfe3d';
+  
+      mockUserModel.findOne.mockResolvedValueOnce(mockUser);
+  
+      const result = await service.logOut(refreshToken);
+  
+      expect(mockUserModel.findOne).toHaveBeenCalledWith({ refreshToken });
+      expect(mockUserModel.updateOne).toHaveBeenCalledWith(
+        { _id: mockUser._id },
+        { $unset: { refreshToken: '' } }
+      );
+      expect(result).toEqual({ message: 'Successfully logged out' });
+    });
+  
+    it('should throw UnauthorizedException if refresh token is invalid', async () => {
+      const refreshToken = 'invalid-refresh-token';
+  
+      mockUserModel.findOne.mockRejectedValue(null);
+  const result=await model.findOne({refreshToken})
+      await expect(service.logOut(refreshToken))
+        .rejects
+        .toThrow(new UnauthorizedException('Invalid refresh token'));
+    });
   });
+  
+
+  
+
+
 });

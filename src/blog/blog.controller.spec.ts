@@ -7,10 +7,12 @@ import { createBlogDto } from "./dto/create-blog.dto";
 import { User } from "../auth/schema/user.schema";
 import { updateUserDto } from "src/author/dto/update.user.dto";
 import { UpdateBlogDto } from "./dto/update-blog.dto";
+ 
 
 describe('BlogController', () => {
     let blogController: BlogController;
     let blogService: BlogService;
+
     const mockBlog: Blog = {
         _id: '660d47933aeebfc7846b182e',
         head: "Sample Blog Title",
@@ -23,7 +25,9 @@ describe('BlogController', () => {
           email: 'test@example.com',
           desc: 'Test user description',
           password: 'password',
-          refreshToken:'dse3f3'
+          refreshToken:'dse3f3',
+        profilePic: "url_to_profile_picture.jpg"
+
           
         },
         tags: ['tag1', 'tag2'],
@@ -57,10 +61,14 @@ describe('BlogController', () => {
     describe('getAllBlogs', () => {
         it("should return all the blog based on query", async () => {
             let mockAllBlog: Blog[];
+          
             let query = {}
-            jest.spyOn(blogController, 'getAllBlogs').mockResolvedValue(mockAllBlog)
+            let total:number;
+            jest.spyOn(blogController, 'getAllBlogs').mockResolvedValue({blogs:mockAllBlog,total})
             const result = await blogController.getAllBlogs(query)
-            expect(result).toBe(mockAllBlog)
+            
+       
+            expect(result).toEqual({blogs:mockAllBlog,total})
         })
     })
 

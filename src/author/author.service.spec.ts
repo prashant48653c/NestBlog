@@ -5,6 +5,7 @@ import { User } from '../auth/schema/user.schema';
 import mongoose, { model } from 'mongoose';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AuthorService } from '../author/author.service';
+import { mock } from 'node:test';
 
 describe('AuthorService', () => {
   let service: AuthorService;
@@ -22,6 +23,7 @@ describe('AuthorService', () => {
   const mockUserModel = {
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
+    updatePP:jest.fn()
   };
 
   beforeEach(async () => {
@@ -88,4 +90,61 @@ describe('AuthorService', () => {
 
     });
   });
+
+  describe('updatePP',()=>{
+    it('should return updatedUser with updated profile picture',async()=>{
+      let file:Express.Multer.File = {
+        fieldname: 'fileUpload',
+        originalname: 'example.txt',
+        destination: 'uploads/',
+        filename: 'example-12345.txt',
+        mimetype: 'text/plain',
+        path: 'uploads/example-12345.txt',
+        size: 2323,
+        stream: null,  
+        buffer: Buffer.from('Example file content'),
+        encoding:'dfdsf'
+      };
+      let _id:string='123'
+      const mockUpdatedUser = {
+        _id: '123',
+        username: 'updatedUser',
+        desc: 'updatedDescription',
+        profilePic:'i.png',
+        email:'ac@gmail.com',
+        password:'aaaaaa',
+        refreshToken:'sdfsdfd'
+      };
+      jest.spyOn(userModel, "findByIdAndUpdate").mockReturnValue(mockUpdatedUser)
+      
+      const result = await service.updatePP(file,_id);
+      expect(result).toEqual(mockUpdatedUser);
+      expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        _id,
+        { profilePic:`http://localhost:4000/uploads/${file.path}` },
+        { new: true, runValidators: true }
+      );
+
+
+    })
+
+    it('should return NotFoundException if user is not found',async()=>{
+
+      let file:Express.Multer.File = {
+        fieldname: 'fileUpload',
+        originalname: 'example.txt',
+        destination: 'uploads/',
+        filename: 'example-12345.txt',
+        mimetype: 'text/plain',
+        path: 'uploads/example-12345.txt',
+        size: 2323,
+        stream: null,  
+        buffer: Buffer.from('Example file content'),
+        encoding:'dfdsf'
+      };
+      await expect(service.updatePP(file, 'nonexistentId')).rejects.toThrow(
+        NotFoundException,
+      );
+    })
+  })
 });

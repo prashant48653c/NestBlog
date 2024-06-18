@@ -25,8 +25,8 @@ export class AccessTokenStrategy extends PassportStrategy(
 
   async validate(req: Request, payload: JwtPayload): Promise<any> {
     console.log(payload, "from access stragety")
-    const user = await this.userModel.findById(payload.sub);
+    const user = await this.userModel.findById(payload._id);
     if (user) return user;
-    throw new UnauthorizedException('Unauthorized condition');
+    throw new UnauthorizedException({message:'Login to continue'});
   }
 }

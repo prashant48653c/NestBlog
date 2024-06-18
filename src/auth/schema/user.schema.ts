@@ -25,6 +25,10 @@ export class User {
 
  
   _id:string;
+  
+  @Prop({ type: String,default:"http://localhost:4000/uploads/default.png" })
+  profilePic:string;
+
   @Prop({ type: String })
   refreshToken:string;
 }
