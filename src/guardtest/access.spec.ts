@@ -6,6 +6,7 @@ import { Request } from 'express';
 import { AccessTokenStrategy } from '../auth/strageties/access-token.stragety';
 import { User } from '../auth/schema/user.schema';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule } from '@nestjs/config';
 
 describe('AccessTokenStrategy', () => {
   let strategy: AccessTokenStrategy;
@@ -14,8 +15,12 @@ describe('AccessTokenStrategy', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: ['.env'],   
+        }),
         JwtModule.register({
-          secret: process.env.JWT_SECRET_KEY || 'testSecretKey',
+          secret: process.env.JWT_SECRET_KEY || 'testSecretKey', //  
         }),
       ],
       providers: [

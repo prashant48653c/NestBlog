@@ -9,7 +9,7 @@ import { createMocks } from 'node-mocks-http';
 import { User } from './schema/user.schema';
 import { AccessTokenGuard } from '../guards/access-token.guard';
 import { loginType, returnedTokenType, signUpType } from './types/helper';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
 @ApiTags("Authentication")
@@ -17,6 +17,11 @@ export class AuthController {
   constructor(private authService: AuthService) { }  //getting authserveice
 
   @Post('signup')
+  @ApiOperation({ summary: 'SignUp a new user' })
+  @ApiResponse({ status: 200, description: 'User successfully registered' })
+  @ApiResponse({ status: 400, description: 'Invalid credentials' })
+ 
+
   async signUp(@Body() signUpDto: signUpDto): Promise<signUpType> {
 
     return await this.authService.signUp(signUpDto)
@@ -26,9 +31,15 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiOperation({ summary: 'Log in a user' })
+  @ApiResponse({ status: 200, description: 'User successfully logged in' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 404, description: 'User Not Found' })
+
   async loginUser(
 
     @Req() req,
+    @Body()loginDto:loginDto
 
   ): Promise<loginType> {
     const data = await this.authService.login(req.user);
@@ -41,15 +52,24 @@ export class AuthController {
 
 
   @Post('refreshaccesstoken')
+  @ApiOperation({ summary: 'Get new access and refresh tokens' })
+  @ApiResponse({ status: 200, description: 'Access and Refresh token are regenerated' })
+  @ApiResponse({ status: 401, description: 'Unauthorized : Invalid refresh token' })
+ 
+
   async refreshTokens(@Body() { REFRESHTOKEN }): Promise<returnedTokenType> {
     console.log("Route hitted")
     return await this.authService.refreshTokens({ REFRESHTOKEN })
   }
 
   @ApiSecurity("Jwt-Auth")
-
-  @Delete('logout')
   @UseGuards(AccessTokenGuard)
+  @Delete('logout')
+  @ApiOperation({ summary: 'Logout the user' })
+  @ApiResponse({ status: 200, description: 'Logout successfull' })
+  @ApiResponse({ status: 401, description: ' Invalid refresh token' })
+ 
+
   async logOut(@Body('refreshToken') refreshToken: string, @Res() res: Response): Promise<any> {
 
 

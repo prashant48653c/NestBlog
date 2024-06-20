@@ -11,19 +11,32 @@ describe('AuthorService', () => {
   let service: AuthorService;
   let userModel: any;
 
-  const mockUser = {
+  const mockUser:User = {
     _id: '12345',
     username: 'testuser',
     email: 'test@example.com',
     desc: 'Test user description',
     password: 'password',
     refreshToken: 'slfjsdfe3d',
+    profilePic:'i.png'
+  };
+  const file: Express.Multer.File = {
+    fieldname: 'fileUpload',
+    originalname: 'example.txt',
+    destination: 'uploads/',
+    filename: 'example-12345.txt',
+    mimetype: 'text/plain',
+    path: 'uploads/example-12345.txt',
+    size: 2323,
+    stream: null,
+    buffer: Buffer.from('Example file content'),
+    encoding: '7bit'
   };
 
   const mockUserModel = {
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
-    updatePP:jest.fn()
+    updatePP: jest.fn()
   };
 
   beforeEach(async () => {
@@ -56,10 +69,9 @@ describe('AuthorService', () => {
     it('should throw an error if user does not exist', async () => {
       const id = "invalid id"
       jest.spyOn(userModel, "findById").mockResolvedValue(null)
-      const result = await service.getUserInfo(id)
-      await expect(service.getUserInfo(id)).rejects.toThrow(NotFoundException);
-      await expect(service.getUserInfo(id)).rejects.toThrow("User doesn't exist");
-
+      
+      await expect(service.getUserInfo(id)).rejects.toThrow(new NotFoundException({message:"User doesn't exist"}));
+     
 
     });
   });
@@ -84,16 +96,18 @@ describe('AuthorService', () => {
 
     it('should throw an error if user ID is invalid', async () => {
       const userData = { username: 'updatedUser', desc: 'Updated description', id: 'invalid_id' };
-
-      await expect(service.updateUserInfo(userData)).toThrow(BadRequestException);
-      await expect(service.updateUserInfo(userData)).toThrow('Invalid user ID');
-
+  
+      jest.spyOn(userModel, "findByIdAndUpdate").mockResolvedValue(null);
+  
+      await expect(service.updateUserInfo(userData)).rejects.toThrow(BadRequestException);
+      await expect(service.updateUserInfo(userData)).rejects.toThrow('Invalid user ID');
     });
+
   });
 
-  describe('updatePP',()=>{
-    it('should return updatedUser with updated profile picture',async()=>{
-      let file:Express.Multer.File = {
+  describe('updatePP', () => {
+    it('should return updatedUser with updated profile picture', async () => {
+      const file: Express.Multer.File = {
         fieldname: 'fileUpload',
         originalname: 'example.txt',
         destination: 'uploads/',
@@ -101,36 +115,34 @@ describe('AuthorService', () => {
         mimetype: 'text/plain',
         path: 'uploads/example-12345.txt',
         size: 2323,
-        stream: null,  
+        stream: null,
         buffer: Buffer.from('Example file content'),
-        encoding:'dfdsf'
+        encoding: '7bit'
       };
-      let _id:string='123'
+      const _id: string = '123';
       const mockUpdatedUser = {
         _id: '123',
         username: 'updatedUser',
         desc: 'updatedDescription',
-        profilePic:'i.png',
-        email:'ac@gmail.com',
-        password:'aaaaaa',
-        refreshToken:'sdfsdfd'
+        profilePic: `http://localhost:4000/${file.path}`,
+        email: 'ac@gmail.com',
+        password: 'aaaaaa',
+        refreshToken: 'sdfsdfd'
       };
-      jest.spyOn(userModel, "findByIdAndUpdate").mockReturnValue(mockUpdatedUser)
-      
-      const result = await service.updatePP(file,_id);
+  
+      jest.spyOn(userModel, "findByIdAndUpdate").mockResolvedValue(mockUpdatedUser);
+  
+      const result = await service.updatePP(file, _id);
       expect(result).toEqual(mockUpdatedUser);
       expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(
         _id,
-        { profilePic:`http://localhost:4000/uploads/${file.path}` },
+        { profilePic: `http://localhost:4000/${file.path}` },
         { new: true, runValidators: true }
       );
-
-
-    })
-
-    it('should return NotFoundException if user is not found',async()=>{
-
-      let file:Express.Multer.File = {
+    });
+  
+    it('should return NotFoundException if user is not found', async () => {
+      const file: Express.Multer.File = {
         fieldname: 'fileUpload',
         originalname: 'example.txt',
         destination: 'uploads/',
@@ -138,13 +150,16 @@ describe('AuthorService', () => {
         mimetype: 'text/plain',
         path: 'uploads/example-12345.txt',
         size: 2323,
-        stream: null,  
+        stream: null,
         buffer: Buffer.from('Example file content'),
-        encoding:'dfdsf'
+        encoding: '7bit'
       };
-      await expect(service.updatePP(file, 'nonexistentId')).rejects.toThrow(
-        NotFoundException,
-      );
-    })
-  })
+  
+      jest.spyOn(userModel, "findByIdAndUpdate").mockResolvedValue(null);
+  
+      await expect(service.updatePP(file, 'nonexistentId')).rejects.toThrow(NotFoundException);
+    });
+  });
+  
+
 });

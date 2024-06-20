@@ -15,7 +15,7 @@ export class AuthorService {
   async getUserInfo(id: string): Promise<any> {
     const user = await this.userModel.findById(id)
     if (!user) {
-      throw new NotFoundException("User doesn't exist")
+      throw new NotFoundException({message:"User doesn't exist"})
     }
     return user
   }
@@ -23,14 +23,15 @@ export class AuthorService {
   async updateUserInfo(userData: { username: string, desc: string, id: string }): Promise<any> {
     const { username, desc, id } = userData
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid user ID');
-    }
+  
     const updatedUser = await this.userModel.findByIdAndUpdate(
       id,
       { username: username, desc: desc },
       { new: true, runValidators: true }
     );
+    if(!updatedUser){
+      throw new BadRequestException('Invalid user ID')
+    }
     return updatedUser
 
   }

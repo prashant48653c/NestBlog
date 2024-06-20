@@ -71,7 +71,7 @@ describe('AuthController', () => {
         it('should login a user', async () => {
             mockAuthService.login.mockResolvedValue(mockLoginType);
             const req = { user: mockUser };
-            const result = await authController.loginUser(req);
+            const result = await authController.loginUser(req,mockLoginDto);
             expect(result).toBe(mockLoginType);
             expect(mockAuthService.login).toHaveBeenCalledWith(req.user);
         });

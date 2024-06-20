@@ -17,8 +17,8 @@ import { loginType, returnedTokenType, signUpType, tokensType, validateType } fr
 export class AuthService {
   constructor(
     @InjectModel(User.name)
-    private Usermodel: Model<User>,   //it's like passing Usermodel
-    private JwtService: JwtService   //passing jwtservice
+    private Usermodel: Model<User>,
+    private JwtService: JwtService
   ) { }
 
 
@@ -56,7 +56,7 @@ export class AuthService {
 
 
   async login(user: User): Promise<loginType> {
-    
+
     const token = await this.JwtService.sign({ _id: user._id }, { expiresIn: '2d' });
     const refreshToken = await this.JwtService.sign({ _id: user._id }, { expiresIn: '7d' })
 
@@ -67,11 +67,11 @@ export class AuthService {
       { new: true }
     );
 
-    if(!updatedUser){
-      throw new NotFoundException({messege:'User not found'})
+    if (!updatedUser) {
+      throw new NotFoundException({ messege: 'User not found' })
     }
-     
-    return {user,token,refreshToken};
+
+    return { user: updatedUser, token, refreshToken };
   }
 
 
@@ -79,62 +79,58 @@ export class AuthService {
   async validateUser(loginData: validateType): Promise<any> {
     const { email, password } = loginData
     console.log(email, 'from validateuser')
-    
+
     const isUser = await this.Usermodel.findOne({ email: email.toLowerCase() })
     if (!isUser) {
-      throw new NotFoundException({message:'User not found'})
-      
+      throw new NotFoundException({ message: 'User not found' })
+
 
     }
     const isRightPassword = await AUTH_UTILITY.comparePasswords(password, isUser.password)
 
-    if (!isRightPassword) {
-      throw new BadRequestException({message:"Invalid password"})
+    if(isRightPassword){
+      return isUser
     }
-    console.log(isUser)
-    return isUser
+   else {
+      throw new BadRequestException({ message: "Invalid password" })
+    }
+    
+    
   }
 
-  async refreshTokens({  REFRESHTOKEN }: tokensType): Promise<returnedTokenType> {
-    // const refreshStatus = AUTH_UTILITY.isTokenExpired(REFRESHTOKEN);
-    // const accessStatus = AUTH_UTILITY.isTokenExpired(ACCESSTOKEN);
+  async refreshTokens({ REFRESHTOKEN }: tokensType): Promise<returnedTokenType> {
     const User = await this.Usermodel.findOne({ refreshToken: REFRESHTOKEN });
-
+  
     if (!User) {
-        throw new UnauthorizedException({messege:'Invalid refresh token'});
+      throw new UnauthorizedException({ messege: 'Invalid refresh token' });
+    }
+  
+    const newRefreshToken = this.JwtService.sign({ id: User._id }, { expiresIn: '7d' });
+    await this.Usermodel.findByIdAndUpdate(User._id, { refreshToken: newRefreshToken });
+  
+    const newAccessToken = this.JwtService.sign({ id: User._id }, { expiresIn: '2d' });
+  
+    return {
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    };
+  }
+  
+  
+
+
+
+  async logOut(refreshToken: string): Promise<any> {
+    const user = await this.Usermodel.findOne({ refreshToken });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid refresh token');
     }
 
-    let newAccessToken = null;
-    let newRefreshToken = null;
+    await this.Usermodel.updateOne({ _id: user._id }, { $unset: { refreshToken: "" } });
 
-    
-        newRefreshToken = this.JwtService.sign({ id: User._id }, { expiresIn: '7d' });
-        await User.updateOne({ refreshToken: newRefreshToken });
-    
-
-  
-        newAccessToken = this.JwtService.sign({ id: User._id }, { expiresIn: '2d' });
-    
-
-    return {
-        accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-    };
-}
-
-
-
-async logOut(refreshToken: string): Promise<any> {
-  const user = await this.Usermodel.findOne({ refreshToken });
-
-  if (!user) {
-      throw new UnauthorizedException('Invalid refresh token');
+    return { message: 'Successfully logged out' };
   }
-
-  await this.Usermodel.updateOne({ _id: user._id }, { $unset: { refreshToken: "" } });
-
-  return { message: 'Successfully logged out' };
-}
 
 
 }
