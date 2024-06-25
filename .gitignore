@@ -15,6 +15,12 @@ lerna-debug.log*
 # OS
 .DS_Store
 
+# images
+
+*.png
+*.jfif
+*.jpg
+*.jpeg
 # Tests
 /coverage
 /.nyc_output

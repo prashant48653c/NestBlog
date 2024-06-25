@@ -5,20 +5,25 @@ import { User } from '../auth/schema/user.schema';
 import mongoose, { model } from 'mongoose';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { AuthorService } from '../author/author.service';
-import { mock } from 'node:test';
+import { cloudinaryConfig } from '../cloudinary/config';
+import * as cloudinary from 'cloudinary'
+import * as fs from 'fs';
+
 
 describe('AuthorService', () => {
   let service: AuthorService;
   let userModel: any;
+  jest.mock('cloudinary');
+  jest.mock('fs');
 
-  const mockUser:User = {
+  const mockUser: User = {
     _id: '12345',
     username: 'testuser',
     email: 'test@example.com',
     desc: 'Test user description',
     password: 'password',
     refreshToken: 'slfjsdfe3d',
-    profilePic:'i.png'
+    profilePic: 'i.png'
   };
   const file: Express.Multer.File = {
     fieldname: 'fileUpload',
@@ -69,9 +74,9 @@ describe('AuthorService', () => {
     it('should throw an error if user does not exist', async () => {
       const id = "invalid id"
       jest.spyOn(userModel, "findById").mockResolvedValue(null)
-      
-      await expect(service.getUserInfo(id)).rejects.toThrow(new NotFoundException({message:"User doesn't exist"}));
-     
+
+      await expect(service.getUserInfo(id)).rejects.toThrow(new NotFoundException({ message: "User doesn't exist" }));
+
 
     });
   });
@@ -96,9 +101,9 @@ describe('AuthorService', () => {
 
     it('should throw an error if user ID is invalid', async () => {
       const userData = { username: 'updatedUser', desc: 'Updated description', id: 'invalid_id' };
-  
+
       jest.spyOn(userModel, "findByIdAndUpdate").mockResolvedValue(null);
-  
+
       await expect(service.updateUserInfo(userData)).rejects.toThrow(BadRequestException);
       await expect(service.updateUserInfo(userData)).rejects.toThrow('Invalid user ID');
     });
@@ -124,23 +129,28 @@ describe('AuthorService', () => {
         _id: '123',
         username: 'updatedUser',
         desc: 'updatedDescription',
-        profilePic: `http://localhost:4000/${file.path}`,
+        profilePic: 'http://cloudinary.com/secure_url',
         email: 'ac@gmail.com',
         password: 'aaaaaa',
         refreshToken: 'sdfsdfd'
       };
-  
-      jest.spyOn(userModel, "findByIdAndUpdate").mockResolvedValue(mockUpdatedUser);
-  
+      const uploadResponse:any = { secure_url: 'http://cloudinary.com/secure_url', bytes: 12345 };
+
+      jest.spyOn(cloudinary.v2.uploader, 'upload').mockResolvedValue(uploadResponse);
+      jest.spyOn(userModel, 'findByIdAndUpdate').mockResolvedValue(mockUpdatedUser);
+      jest.spyOn(fs, 'unlinkSync').mockImplementation(() => {});
+
       const result = await service.updatePP(file, _id);
       expect(result).toEqual(mockUpdatedUser);
+      expect(cloudinary.v2.uploader.upload).toHaveBeenCalledWith(file.path, expect.any(Object));
       expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(
         _id,
-        { profilePic: `http://localhost:4000/${file.path}` },
+        { profilePic: uploadResponse.secure_url },
         { new: true, runValidators: true }
       );
+      expect(fs.unlinkSync).toHaveBeenCalledWith(file.path);
     });
-  
+
     it('should return NotFoundException if user is not found', async () => {
       const file: Express.Multer.File = {
         fieldname: 'fileUpload',
@@ -154,12 +164,27 @@ describe('AuthorService', () => {
         buffer: Buffer.from('Example file content'),
         encoding: '7bit'
       };
-  
-      jest.spyOn(userModel, "findByIdAndUpdate").mockResolvedValue(null);
-  
+      const uploadResponse:any = { secure_url: 'http://cloudinary.com/secure_url', bytes: 12345 };
+
+      jest.spyOn(cloudinary.v2.uploader, 'upload').mockResolvedValue(uploadResponse);
+      jest.spyOn(userModel, 'findByIdAndUpdate').mockResolvedValue(null);
+      jest.spyOn(fs, 'unlinkSync').mockImplementation(() => {});
+
       await expect(service.updatePP(file, 'nonexistentId')).rejects.toThrow(NotFoundException);
+
+      expect(cloudinary.v2.uploader.upload).toHaveBeenCalledWith(file.path,{
+        use_filename: true,
+        resource_type: 'auto',
+        chunk_size: cloudinaryConfig.chunk_size,
+      });
+
+      expect(userModel.findByIdAndUpdate).toHaveBeenCalledWith(
+        'nonexistentId',
+        { profilePic: uploadResponse.secure_url },
+        { new: true, runValidators: true }
+      );
+      
     });
   });
-  
 
 });
