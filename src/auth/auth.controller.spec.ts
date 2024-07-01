@@ -4,7 +4,7 @@ import { AuthService } from "./auth.service";
 import { User } from "./schema/user.schema";
 import { loginDto } from "./dto/login.dto";
 import { signUpDto } from "./dto/signup.dto";
-import { loginType, returnedTokenType, signUpType, tokensType } from "./types/helper";
+import { loginType, returnedTokenType, signUpType, tokensType } from "./types/types";
 import { createMocks } from 'node-mocks-http';
 
 describe('AuthController', () => {

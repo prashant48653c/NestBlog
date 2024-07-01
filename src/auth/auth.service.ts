@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { signUpDto } from './dto/signup.dto';
 import { loginDto } from './dto/login.dto';
 import { AUTH_UTILITY } from './utility/auth.utility';
-import { loginType, returnedTokenType, signUpType, tokensType, validateType } from './types/helper';
+import { loginType, returnedTokenType, signUpType, tokensType, validateType } from './types/types';
 
 
 @Injectable()
