@@ -1,5 +1,5 @@
 import { Query as ExpressQuery } from 'express-serve-static-core'
-import { Blog } from '../schema/blog.schema';
+import { Blog } from '../modules/blog/schema/blog.schema';
  
 
 export class BLOG_UTILITY {

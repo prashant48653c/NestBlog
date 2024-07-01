@@ -4,8 +4,8 @@ import { getModelToken } from '@nestjs/mongoose';
 import { User } from '../auth/schema/user.schema';
 import mongoose, { model } from 'mongoose';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { AuthorService } from '../author/author.service';
-import { cloudinaryConfig } from '../cloudinary/config';
+import { AuthorService } from './author.service';
+import { cloudinaryConfig } from '../../config/cloudinary.config';
 import * as cloudinary from 'cloudinary'
 import * as fs from 'fs';
 

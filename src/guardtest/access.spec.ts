@@ -3,8 +3,8 @@ import { UnauthorizedException } from '@nestjs/common';
 import { getModelToken } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Request } from 'express';
-import { AccessTokenStrategy } from '../auth/strageties/access-token.stragety';
-import { User } from '../auth/schema/user.schema';
+import { AccessTokenStrategy } from '../modules/auth/strageties/access-token.stragety';
+import { User } from '../modules/auth/schema/user.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 

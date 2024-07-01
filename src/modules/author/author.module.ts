@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AuthorController } from './author.controller';
 import { AuthorService } from './author.service';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from 'src/modules/auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { USERSCHEMA } from 'src/auth/schema/user.schema';
+import { USERSCHEMA } from 'src/modules/auth/schema/user.schema';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({

@@ -5,7 +5,7 @@ import { getModelToken } from "@nestjs/mongoose";
 import mongoose, { Model } from "mongoose";
 import { BadRequestException, NotFoundException, HttpException, HttpStatus } from "@nestjs/common";
 import { Blog } from "./schema/blog.schema";
-import { User } from "src/auth/schema/user.schema";
+import { User } from "src/modules/auth/schema/user.schema";
 
 
 

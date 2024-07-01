@@ -2,7 +2,7 @@ import { BadRequestException, Inject, Injectable, NotFoundException } from '@nes
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { User, UsersModel } from '../auth/schema/user.schema';
-import { cloudinaryConfig } from '../cloudinary/config';
+import { cloudinaryConfig } from '../../config/cloudinary.config';
 import * as cloudinary from 'cloudinary'
 import * as fs from 'fs';
 

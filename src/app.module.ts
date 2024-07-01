@@ -1,11 +1,11 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BlogModule } from './blog/blog.module';
+import { BlogModule } from './modules/blog/blog.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
-import { AuthorModule } from './author/author.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { AuthorModule } from './modules/author/author.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 

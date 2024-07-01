@@ -4,9 +4,9 @@ import { User } from '../auth/schema/user.schema';
  
 import { updateUserDto } from './dto/update.user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from '../multer/multer.config';
+import { multerOptions } from '../../config/multer.config';
 import { ApiOperation, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
-import { AccessTokenGuard } from '../guards/access-token.guard';
+import { AccessTokenGuard } from '../../guards/access-token.guard';
 
 @Controller('author')
 @ApiTags("Author")

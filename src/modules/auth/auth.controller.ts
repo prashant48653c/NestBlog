@@ -7,7 +7,7 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { Response } from 'express';
 import { createMocks } from 'node-mocks-http';
 import { User } from './schema/user.schema';
-import { AccessTokenGuard } from '../guards/access-token.guard';
+import { AccessTokenGuard } from '../../guards/access-token.guard';
 import { loginType, returnedTokenType, signUpType } from './types/types';
 import { ApiOperation, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 

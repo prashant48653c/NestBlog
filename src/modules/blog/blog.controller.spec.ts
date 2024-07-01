@@ -2,10 +2,10 @@ import { Test } from "@nestjs/testing";
 import { BlogController } from "./blog.controller";
 import { BlogService } from "./blog.service";
 import { Blog } from "./schema/blog.schema";
-import { AuthController } from "src/auth/auth.controller";
+import { AuthController } from "src/modules/auth/auth.controller";
 import { createBlogDto } from "./dto/create-blog.dto";
 import { User } from "../auth/schema/user.schema";
-import { updateUserDto } from "src/author/dto/update.user.dto";
+import { updateUserDto } from "src/modules/author/dto/update.user.dto";
 import { UpdateBlogDto } from "./dto/update-blog.dto";
  
 

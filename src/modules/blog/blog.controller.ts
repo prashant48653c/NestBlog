@@ -5,7 +5,7 @@ import { createBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { Query as ExpressQuery } from 'express-serve-static-core'
 
-import { AccessTokenGuard } from '../guards/access-token.guard';
+import { AccessTokenGuard } from '../../guards/access-token.guard';
 import { ApiOperation, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 
